@@ -32,7 +32,7 @@ func init() {
 		log.Fatal(err)
 	}
 
-	flag.StringVar(&davDir, "dir", dir, "WebDAV directory to serve.")
+	flag.StringVar(&davDir, "davdir", dir, "WebDAV directory to serve.")
 	flag.StringVar(&listen, "http", ":8080", "Listen on")
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
 	flag.StringVar(&prefix, "prefix", "/dav/", "Prefix to serve dav things from.")
