@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/qbit/gavin/pu"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/webdav"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -39,10 +39,10 @@ func init() {
 	flag.StringVar(&staticDir, "static", dir, "Directory to serve static resources from.")
 	flag.Parse()
 
-	unix.Unveil(staticDir, "r")
-	unix.Unveil(passPath, "r")
-	unix.Unveil(davDir, "rwc")
-	err = unix.UnveilBlock()
+	pu.U(staticDir, "r")
+	pu.U(passPath, "r")
+	pu.U(davDir, "rwc")
+	err = pu.UBlock()
 	if err != nil {
 		log.Fatal(err)
 	}
