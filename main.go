@@ -48,10 +48,10 @@ func init() {
 	}
 
 	p, err := os.Open(passPath)
-	defer p.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer p.Close()
 
 	ht := csv.NewReader(p)
 	ht.Comma = ':'
@@ -76,10 +76,7 @@ func validate(user string, pass string) bool {
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(htpass), []byte(pass))
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
 
 func main() {
@@ -104,7 +101,7 @@ func main() {
 	mux.Handle("/", http.FileServer(http.Dir(staticDir)))
 	mux.HandleFunc(prefix, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, pass, ok := r.BasicAuth()
-		if !(ok == true && validate(user, pass)) {
+		if !(ok && validate(user, pass)) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="davfs"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
