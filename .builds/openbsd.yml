@@ -1,0 +1,11 @@
+image: openbsd/latest
+packages:
+  - go
+environment:
+  PATH: /bin:/usr/bin/:/usr/local/bin
+sources:
+  - https://git.sr.ht/~qbit/gavin
+tasks:
+  - build_gavin: |
+      cd gavin
+      go build
