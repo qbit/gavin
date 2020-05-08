@@ -1,5 +1,7 @@
 # gavin
 
+[![builds.sr.ht status](https://builds.sr.ht/~qbit/gavin.svg)](https://builds.sr.ht/~qbit/gavin?)
+
 Simple utility to serve password protected WebDAV.
 
 ## Installation
