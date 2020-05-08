@@ -2,6 +2,12 @@
 
 Simple utility to serve password protected WebDAV.
 
+## Installation
+
+```
+go git -u suah.dev/gavin
+```
+
 ## Example usage
 
 `gavin` was built as a simple WebDAV server specifically to run
