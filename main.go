@@ -29,13 +29,13 @@ func init() {
 	users = make(map[string]string)
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err);
 	}
 
-	flag.StringVar(&davDir, "davdir", dir, "WebDAV directory to serve.")
+	flag.StringVar(&davDir, "davdir", dir, "Directory to serve over WebDAV.")
 	flag.StringVar(&listen, "http", ":8080", "Listen on")
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
-	flag.StringVar(&prefix, "prefix", "/dav/", "Prefix to serve dav things from.")
+	flag.StringVar(&prefix, "prefix", "/dav/", "Prefix to serve davdir from.")
 	flag.StringVar(&staticDir, "static", dir, "Directory to serve static resources from.")
 	flag.Parse()
 
