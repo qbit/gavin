@@ -1,4 +1,4 @@
-module github.com/qbit/gavin
+module suah.dev/gavin
 
 go 1.13
 

@@ -6,10 +6,14 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func U(path string, perms string) {
+func Pledge(promises string) {
+	unix.PledgePromises(promises)
+}
+
+func Unveil(path string, perms string) {
 	unix.Unveil(path, perms)
 }
 
-func UBlock() error {
+func UnveilBlock() error {
 	return unix.UnveilBlock()
 }

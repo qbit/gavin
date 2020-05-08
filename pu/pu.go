@@ -4,10 +4,14 @@ package pu
 
 import "fmt"
 
-func U(path string, perms string) {
-	fmt.Printf("WARNING: no unveil (%s, %s)\n", path, perms)
+func Pledge(promisess string) {
+	return nil
 }
 
-func UBlock() error {
+func Unveil(path string, perms string) {
+	return nil
+}
+
+func UnveilBlock() error {
 	return nil
 }

@@ -11,16 +11,16 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/qbit/gavin/pu"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/webdav"
+	"suah.dev/gavin/pu"
 )
 
 var (
 	davDir    string
 	listen    string
 	passPath  string
-	prefix    string
+	davPath   string
 	staticDir string
 	users     map[string]string
 )
@@ -29,20 +29,21 @@ func init() {
 	users = make(map[string]string)
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatalln(err);
+		log.Fatalln(err)
 	}
 
 	flag.StringVar(&davDir, "davdir", dir, "Directory to serve over WebDAV.")
 	flag.StringVar(&listen, "http", ":8080", "Listen on")
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
-	flag.StringVar(&prefix, "prefix", "/dav/", "Prefix to serve davdir from.")
-	flag.StringVar(&staticDir, "static", dir, "Directory to serve static resources from.")
+	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
+	flag.StringVar(&staticDir, "static", dir, "Directory to serve static resources from. Served at '/'.")
 	flag.Parse()
 
-	pu.U(staticDir, "r")
-	pu.U(passPath, "r")
-	pu.U(davDir, "rwc")
-	err = pu.UBlock()
+	// These are OpenBSD specific protections used to prevent un-necesary file access.
+	pu.Unveil(staticDir, "r")
+	pu.Unveil(passPath, "r")
+	pu.Unveil(davDir, "rwc")
+	err = pu.UnveilBlock()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +82,7 @@ func validate(user string, pass string) bool {
 
 func main() {
 	wdav := &webdav.Handler{
-		Prefix:     prefix,
+		Prefix:     davPath,
 		LockSystem: webdav.NewMemLS(),
 		FileSystem: webdav.Dir(davDir),
 		Logger: func(r *http.Request, err error) {
@@ -99,7 +100,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.Dir(staticDir)))
-	mux.HandleFunc(prefix, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(davPath, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, pass, ok := r.BasicAuth()
 		if !(ok && validate(user, pass)) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="davfs"`)
