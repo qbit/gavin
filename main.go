@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/webdav"
-	"suah.dev/gavin/pu"
+	"suah.dev/protect"
 )
 
 var (
@@ -40,10 +40,10 @@ func init() {
 	flag.Parse()
 
 	// These are OpenBSD specific protections used to prevent un-necesary file access.
-	pu.Unveil(staticDir, "r")
-	pu.Unveil(passPath, "r")
-	pu.Unveil(davDir, "rwc")
-	err = pu.UnveilBlock()
+	protect.Unveil(staticDir, "r")
+	protect.Unveil(passPath, "r")
+	protect.Unveil(davDir, "rwc")
+	err = protect.UnveilBlock()
 	if err != nil {
 		log.Fatal(err)
 	}
