@@ -52,13 +52,13 @@ func init() {
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
 	flag.Parse()
 
-	// These are OpenBSD specific protections used to prevent un-necesary file access.
-	protect.Unveil(staticDir, "r")
-	protect.Unveil(passPath, "r")
-	protect.Unveil(davDir, "rwc")
-	protect.Unveil(cacheDir, "rwc")
-	protect.Unveil("/etc/ssl/cert.pem", "r")
-	protect.Unveil("/etc/resolv.conf", "r")
+	// These are OpenBSD specific protections used to prevent unnecessary file access.
+	_ = protect.Unveil(staticDir, "r")
+	_ = protect.Unveil(passPath, "r")
+	_ = protect.Unveil(davDir, "rwc")
+	_ = protect.Unveil(cacheDir, "rwc")
+	_ = protect.Unveil("/etc/ssl/cert.pem", "r")
+	_ = protect.Unveil("/etc/resolv.conf", "r")
 	err = protect.UnveilBlock()
 	if err != nil {
 		log.Fatal(err)
