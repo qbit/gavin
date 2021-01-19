@@ -85,7 +85,7 @@ func init() {
 	}
 }
 
-func validate(user string, pass string) bool {
+func authenticate(user string, pass string) bool {
 	htpass, exists := users[user]
 
 	if !exists {
@@ -134,7 +134,7 @@ func main() {
 	}))
 	mux.HandleFunc(davPath, func(w http.ResponseWriter, r *http.Request) {
 		user, pass, ok := r.BasicAuth()
-		if !(ok && validate(user, pass)) {
+		if !(ok && authenticate(user, pass)) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="davfs"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
