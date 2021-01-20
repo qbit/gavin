@@ -2,7 +2,8 @@
 
 [![builds.sr.ht status](https://builds.sr.ht/~qbit/gavin.svg)](https://builds.sr.ht/~qbit/gavin?)
 
-Simple utility to serve password protected WebDAV.
+Simple utility to serve password protected, HTTPS'd  WebDAV server and
+[Organice](https://github.com/200ok-ch/organice) instance.
 
 ## Installation
 
@@ -20,10 +21,9 @@ to host organice via WebDAV.
 |-----------|---------------------|-----------------------------------------------------------------------------------------|
 | `-davdir` | /tmp/org            | The directory we have our .org files in.                                                |
 | `-htpass` | /tmp/.htpasswd      | Standard `htpasswd` file generated with `htpasswd`. Currently only bcrypt is supported. |
-| `-static` | /tmp/organice/build | The directory that contains the built organice files.                                   |
 
 ```
-gavin -davdir /tmp/org -htpass /tmp/.htpasswd -static /tmp/organice/build/
+gavin -davdir /tmp/org -htpass /tmp/.htpasswd 
 ```
 
 Now you can open your browser to

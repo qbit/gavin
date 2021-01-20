@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/tls"
+	"embed"
+	_ "embed"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -19,6 +21,9 @@ import (
 	"suah.dev/protect"
 )
 
+//go:embed organice
+var content embed.FS
+
 var (
 	acmeDomain string
 	test       bool
@@ -28,7 +33,6 @@ var (
 	davPath    string
 	listen     string
 	passPath   string
-	staticDir  string
 	users      map[string]string
 )
 
@@ -48,12 +52,11 @@ func init() {
 	flag.StringVar(&listen, "http", ":8080", "Listen on")
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
 	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
-	flag.StringVar(&staticDir, "static", dir, "Directory to serve static resources from. Served at '/'.")
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
 	flag.Parse()
 
 	// These are OpenBSD specific protections used to prevent unnecessary file access.
-	_ = protect.Unveil(staticDir, "r")
+	_ = protect.Pledge("stdio wpath rpath cpath inet dns unveil")
 	_ = protect.Unveil(passPath, "r")
 	_ = protect.Unveil(davDir, "rwc")
 	_ = protect.Unveil(cacheDir, "rwc")
@@ -125,13 +128,18 @@ func main() {
 		},
 	}
 
-	fileServer := http.FileServer(http.Dir(staticDir))
+	fileServer := http.FileServer(http.FS(content))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", logger(func(w http.ResponseWriter, r *http.Request) {
+		// embed.FS contains the top level directory 'organice'
+		// This modifies the request path to match.
+		r.URL.Path = fmt.Sprintf("/organice%s", r.URL.Path)
+
 		httpLog(r)
 		fileServer.ServeHTTP(w, r)
 	}))
+
 	mux.HandleFunc(davPath, func(w http.ResponseWriter, r *http.Request) {
 		user, pass, ok := r.BasicAuth()
 		if !(ok && authenticate(user, pass)) {
