@@ -28,7 +28,7 @@ jobs:
       run: git clone https://github.com/200ok-ch/organice organice_repo
     
     - name: Build Organice
-      run: cd organice_repo && yarn build && yarn cache clean && rm -rf node_modules && rm -rf .git
+      run: cd organice_repo && yarn install && yarn build && yarn cache clean && rm -rf node_modules && rm -rf .git
 
     - name: Copy Organice into gavin
       run: cp -r organice_repo/build organice
