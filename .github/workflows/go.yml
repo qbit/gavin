@@ -33,7 +33,7 @@ jobs:
         yarn install
         yarn build
         yarn cache clean
-        tar -czvf organice-$(date +"%Y-%m-%d").tar.gz build
+        tar -czvf organice-assets.tar.gz build
 
     - name: Copy Organice into gavin
       run: cp -r organice_repo/build organice
@@ -55,15 +55,26 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
-    - name: Upload Release Asset
-      id: upload-release-asset 
+    
+    - name: Upload OpenBSD Release Asset
+      id: upload-gavin-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./gavin-openbsd.tgz
         asset_name: gavin-openbsd.tgz
         asset_content_type: application/tar+gzip
 
 
+    - name: Upload Organice Assets
+      id: upload-organice-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: organice-assets.tar.gz
+        asset_name: organice-assets.tar.gz
+        asset_content_type: application/tar+gzip
