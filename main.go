@@ -49,7 +49,7 @@ func init() {
 	flag.StringVar(&acmeListen, "alisten", ":80", "Listen for acme requests on")
 	flag.StringVar(&cacheDir, "cache", fmt.Sprintf("%s/.cache", dir), "Directory in which to store ACME certificates.")
 	flag.StringVar(&davDir, "davdir", dir, "Directory to serve over WebDAV.")
-	flag.StringVar(&listen, "http", ":8080", "Listen on")
+	flag.StringVar(&listen, "http", "127.0.0.1:8080", "Listen on")
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
 	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
