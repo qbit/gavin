@@ -14,15 +14,15 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16beta1
+        go-version: 1.15
 
     - name: Set up Node
       uses: actions/setup-node@v2.1.4
       with:
         node-version: 12
 
-    #- name: Install gover and Go 1.16beta1
-    #  run: go get suah.dev/gover && gover download 1.16beta1
+    - name: Install gover and Go 1.16beta1
+      run: go get suah.dev/gover && gover download 1.16beta1
         
     - name: Clone Organice
       run: git clone https://github.com/200ok-ch/organice organice_repo
@@ -42,8 +42,8 @@ jobs:
       run: |
         for i in openbsd darwin linux; do
           for a in amd64 arm64; do
-            #GOOS=${i} GOARCH=${a} gover 1.16beta1 build -v -o gavin-${i}-${a}
-            GOOS=${i} GOARCH=${a} go build -v -o gavin-${i}-${a}
+            GOOS=${i} GOARCH=${a} gover 1.16beta1 build -v -o gavin-${i}-${a}
+            #GOOS=${i} GOARCH=${a} go build -v -o gavin-${i}-${a}
             tar -czvf gavin-${i}-${a}.tgz gavin-${i}-${a}
           done
         done
