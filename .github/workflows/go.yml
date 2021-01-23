@@ -2,8 +2,8 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
-
+    tags:
+    - 'v*'
 jobs:
 
   build:
@@ -58,8 +58,8 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Gavin for OpenBSD Asset
-      id: upload-gavin-openbsd
+    - name: Upload Gavin for OpenBSD-amd64
+      id: upload-gavin-openbsd-amd64
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,8 +68,53 @@ jobs:
         asset_path: gavin-openbsd-amd64.tgz
         asset_name: gavin-openbsd-amd64.tgz
         asset_content_type: application/tar+gzip
-    - name: Upload Gavin for Darwin Asset
-      id: upload-gavin-darwin
+
+    - name: Upload Gavin for OpenBSD-arm64
+      id: upload-gavin-openbsd-arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin-openbsd-arm64.tgz
+        asset_name: gavin-openbsd-arm64.tgz
+        asset_content_type: application/tar+gzip
+
+    - name: Upload Gavin for Linux-amd64
+      id: upload-gavin-linux-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin-linux-amd64.tgz
+        asset_name: gavin-linux-amd64.tgz
+        asset_content_type: application/tar+gzip
+
+    - name: Upload Gavin for Linux-arm64
+      id: upload-gavin-linux-arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin-linux-arm64.tgz
+        asset_name: gavin-linux-arm64.tgz
+        asset_content_type: application/tar+gzip
+
+    - name: Upload Gavin for Darwin-amd64
+      id: upload-gavin-darwin-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin-darwin-amd64.tgz
+        asset_name: gavin-darwin-amd64.tgz
+        asset_content_type: application/tar+gzip
+
+    - name: Upload Gavin for Darwin-arm64
+      id: upload-gavin-darwin-arm64
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
