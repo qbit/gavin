@@ -33,7 +33,7 @@ jobs:
         yarn install
         yarn build
         yarn cache clean
-        tar -czvf organice-assets.tar.gz build
+        tar -czvf ../organice-assets.tar.gz build
 
     - name: Copy Organice into gavin
       run: cp -r organice_repo/build organice
