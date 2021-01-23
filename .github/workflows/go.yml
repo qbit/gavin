@@ -41,8 +41,10 @@ jobs:
     - name: Build
       run: |
         for i in openbsd darwin linux; do
-          GOOS=${i} gover 1.16beta1 build -v -o gavin-${i}
-          tar -czvf gavin-${i}.tgz gavin-${i}
+          for a in amd64 arm64; do
+            GOOS=${i} GOARCH=${a} gover 1.16beta1 build -v -o gavin-${i}-${a}
+            tar -czvf gavin-${i}-${a}.tgz gavin-${i}-${a}
+          done
         done
     
     - name: Create Release
@@ -63,8 +65,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: gavin-openbsd.tgz
-        asset_name: gavin-openbsd.tgz
+        asset_path: gavin-openbsd-amd64.tgz
+        asset_name: gavin-openbsd-amd64.tgz
         asset_content_type: application/tar+gzip
     - name: Upload Gavin for Darwin Asset
       id: upload-gavin-darwin
@@ -73,8 +75,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: gavin-darwin.tgz
-        asset_name: gavin-darwin.tgz
+        asset_path: gavin-darwin-arm64.tgz
+        asset_name: gavin-darwin-arm64.tgz
         asset_content_type: application/tar+gzip
 
     - name: Upload Organice Assets
