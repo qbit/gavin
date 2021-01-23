@@ -56,6 +56,15 @@ jobs:
         draft: false
         prerelease: false
 
+    - name: Upload Organice Assets
+      id: upload-gavin-assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin*.tar.gz
+        asset_content_type: application/tar+gzip
 
     - name: Upload Organice Assets
       id: upload-organice-asset 
