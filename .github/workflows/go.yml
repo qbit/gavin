@@ -56,14 +56,25 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Organice Assets
-      id: upload-gavin-assets
+    - name: Upload Gavin for OpenBSD Asset
+      id: upload-gavin-openbsd
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: gavin*.tar.gz
+        asset_path: gavin-openbsd.tgz
+        asset_name: gavin-openbsd.tgz
+        asset_content_type: application/tar+gzip
+    - name: Upload Gavin for Darwin Asset
+      id: upload-gavin-darwin
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: gavin-darwin.tgz
+        asset_name: gavin-darwin.tgz
         asset_content_type: application/tar+gzip
 
     - name: Upload Organice Assets
