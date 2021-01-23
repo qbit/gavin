@@ -21,6 +21,7 @@ jobs:
       with:
         node-version: 12
 
+    # setup-go doesn't have beta releases so we use gover to install it
     - name: Install gover and Go 1.16beta1
       run: go get suah.dev/gover && gover download 1.16beta1
         
@@ -33,6 +34,7 @@ jobs:
         yarn install
         yarn build
         yarn cache clean
+        cp LICENSE build/
         tar -czvf ../organice-assets.tar.gz build
 
     - name: Copy Organice into gavin
