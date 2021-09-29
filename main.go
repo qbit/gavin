@@ -121,28 +121,27 @@ func logger(f http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func dumpFS(entries []fs.DirEntry, err error) {
+func dumpFS(dest string, entries []fs.DirEntry) {
 	var localRoot = rootFS
-	tmpDir, err := os.MkdirTemp("", "gavin")
+
+	err := os.Mkdir(path.Join(dest, localRoot), 0755)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Dumping files to %q\n", tmpDir)
-
 	for _, e := range entries {
 		fp := path.Join(localRoot, e.Name())
 
-		err := os.Mkdir(path.Join(tmpDir, filepath.Dir(fp)), 0755)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
 		if e.IsDir() {
 			rootFS = fp
-			dumpFS(content.ReadDir(rootFS))
+
+			newDir, err := content.ReadDir(rootFS)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			dumpFS(dest, newDir)
 		} else {
 			fh, err := content.Open(fp)
 			if err != nil {
@@ -152,7 +151,7 @@ func dumpFS(entries []fs.DirEntry, err error) {
 
 			defer fh.Close()
 
-			nfp := path.Join(tmpDir, fp)
+			nfp := path.Join(dest, fp)
 			nfh, err := os.Create(nfp)
 			if err != nil {
 				fmt.Println(err)
@@ -162,14 +161,26 @@ func dumpFS(entries []fs.DirEntry, err error) {
 			defer nfh.Close()
 
 			nfh.ReadFrom(fh)
-			fmt.Println(nfp)
+			fmt.Printf("\t%s\n", nfp)
 		}
 	}
 }
 
 func main() {
 	if dump {
-		dumpFS(content.ReadDir(rootFS))
+		tmpDir, err := os.MkdirTemp("", "gavin")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Printf("Dumping files to %q\n", tmpDir)
+		dir, err := content.ReadDir(rootFS)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		dumpFS(tmpDir, dir)
 		os.Exit(0)
 	}
 
