@@ -7,10 +7,12 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"time"
 
@@ -24,6 +26,9 @@ import (
 //go:embed organice
 var content embed.FS
 
+// Should match the path for content
+var rootFS = "organice"
+
 var (
 	acmeDomain string
 	test       bool
@@ -34,6 +39,7 @@ var (
 	listen     string
 	passPath   string
 	users      map[string]string
+	dump       bool
 )
 
 func init() {
@@ -53,6 +59,7 @@ func init() {
 	flag.StringVar(&passPath, "htpass", fmt.Sprintf("%s/.htpasswd", dir), "Path to .htpasswd file..")
 	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
+	flag.BoolVar(&dump, "dump", false, "Dump Organice assets to disk (./organice).")
 	flag.Parse()
 
 	// These are OpenBSD specific protections used to prevent unnecessary file access.
@@ -114,7 +121,58 @@ func logger(f http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func dumpFS(entries []fs.DirEntry, err error) {
+	var localRoot = rootFS
+	tmpDir, err := os.MkdirTemp("", "gavin")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Dumping files to %q\n", tmpDir)
+
+	for _, e := range entries {
+		fp := path.Join(localRoot, e.Name())
+
+		err := os.Mkdir(path.Join(tmpDir, filepath.Dir(fp)), 0755)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		if e.IsDir() {
+			rootFS = fp
+			dumpFS(content.ReadDir(rootFS))
+		} else {
+			fh, err := content.Open(fp)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			defer fh.Close()
+
+			nfp := path.Join(tmpDir, fp)
+			nfh, err := os.Create(nfp)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			defer nfh.Close()
+
+			nfh.ReadFrom(fh)
+			fmt.Println(nfp)
+		}
+	}
+}
+
 func main() {
+	if dump {
+		dumpFS(content.ReadDir(rootFS))
+		os.Exit(0)
+	}
+
 	wdav := &webdav.Handler{
 		Prefix:     davPath,
 		LockSystem: webdav.NewMemLS(),
