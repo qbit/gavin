@@ -26,7 +26,7 @@ htpasswd .htpasswd $USER
 #### Linux/macOS
 
 ```
-htpasswd -c .htpasswd $USER
+htpasswd -B -c .htpasswd $USER
 ```
 
 ### Example usage on local machine
