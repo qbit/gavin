@@ -17,6 +17,9 @@ can be run from virtually everywhere.
 
 ### Generating a .htpasswd file
 
+Please note: `gavin` expects the `.htpasswd` file to use bcrypt as the hashing
+algorithm!
+
 #### OpenBSD
 
 ```
@@ -31,10 +34,11 @@ htpasswd -B -c .htpasswd $USER
 
 ### Example usage on local machine
 
-#### Install
-```
-go install suah.dev/gavin@latest
-```
+#### Download gavin
+
+Releases can be downloaded for common OSs here:
+
+https://github.com/qbit/gavin/releases
 
 #### Running
 
@@ -43,6 +47,12 @@ go install suah.dev/gavin@latest
 ```
 gavin -davdir ~/org
 ```
+
+Now you log into `gavin` with the following settings:
+
+URL: https://localhost:8080/dav
+Username: $USER
+Password: $YOURPASSWORD
 
 ### Running in auto ACME mode
 

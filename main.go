@@ -234,7 +234,8 @@ func main() {
 			log.Panic(err)
 		}
 
-		log.Printf("Listening for HTTP on '%s'", listen)
+		log.Printf("Organice can be reached at: http://%s", listen)
+		log.Printf("WebDAV URL: http://%s%s", listen, davPath)
 		log.Panic(s.Serve(lis))
 	}
 }
