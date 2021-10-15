@@ -20,6 +20,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/webdav"
+	"suah.dev/htpasswd"
 	"suah.dev/protect"
 )
 
@@ -31,15 +32,16 @@ var rootFS = "organice"
 
 var (
 	acmeDomain string
-	test       bool
 	acmeListen string
 	cacheDir   string
 	davDir     string
 	davPath    string
+	dump       bool
+	genHtpass  bool
 	listen     string
 	passPath   string
+	test       bool
 	users      map[string]string
-	dump       bool
 )
 
 func init() {
@@ -60,6 +62,7 @@ func init() {
 	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
 	flag.BoolVar(&dump, "dump", false, "Dump Organice assets to disk (./organice).")
+	flag.BoolVar(&genHtpass, "gen", false, "Generate a new .htpasswd file (in $PWD) or append an entry to it.")
 	flag.Parse()
 
 	// These are OpenBSD specific protections used to prevent unnecessary file access.
@@ -167,6 +170,24 @@ func dumpFS(dest string, entries []fs.DirEntry) {
 }
 
 func main() {
+	if genHtpass {
+		var htp = htpasswd.HTPasswd{
+			Path:       passPath,
+			UserPrompt: "Username: ",
+			PassPrompt: "Password: ",
+		}
+
+		err := htp.Add()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Printf("Added %q to %q\n", htp.User, htp.Path)
+
+		os.Exit(0)
+	}
+
 	if dump {
 		tmpDir, err := os.MkdirTemp("", "gavin")
 		if err != nil {
