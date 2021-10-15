@@ -20,13 +20,19 @@ can be run from virtually everywhere.
 Please note: `gavin` expects the `.htpasswd` file to use bcrypt as the hashing
 algorithm!
 
-#### OpenBSD
+#### Using `gavin`
+
+```
+gavin -htpass /secrets/.htpasswd -gen
+```
+
+#### OpenBSD using `htpasswd`
 
 ```
 htpasswd .htpasswd $USER
 ```
 
-#### Linux/macOS
+#### Linux/macOS using `htpasswd`
 
 ```
 htpasswd -B -c .htpasswd $USER
