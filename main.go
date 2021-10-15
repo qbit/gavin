@@ -62,7 +62,7 @@ func init() {
 	flag.StringVar(&davPath, "davpath", "/dav/", "Directory containing files to serve over WebDAV.")
 	flag.BoolVar(&test, "test", false, "Enable testing mode (uses staging LetsEncrypt).")
 	flag.BoolVar(&dump, "dump", false, "Dump Organice assets to disk (./organice).")
-	flag.BoolVar(&genHtpass, "gen", false, "Generate a new .htpasswd file (in $PWD) or append an entry to it.")
+	flag.BoolVar(&genHtpass, "gen", false, fmt.Sprintf("Generate a new .htpasswd file (in %q) or append an entry to it.", passPath))
 	flag.Parse()
 
 	// These are OpenBSD specific protections used to prevent unnecessary file access.
@@ -73,24 +73,26 @@ func init() {
 	_ = protect.Unveil("/etc/resolv.conf", "r")
 	_ = protect.Pledge("stdio wpath rpath cpath inet dns")
 
-	p, err := os.Open(passPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer p.Close()
+	if !genHtpass {
+		p, err := os.Open(passPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer p.Close()
 
-	ht := csv.NewReader(p)
-	ht.Comma = ':'
-	ht.Comment = '#'
-	ht.TrimLeadingSpace = true
+		ht := csv.NewReader(p)
+		ht.Comma = ':'
+		ht.Comment = '#'
+		ht.TrimLeadingSpace = true
 
-	entries, err := ht.ReadAll()
-	if err != nil {
-		log.Fatal(err)
-	}
+		entries, err := ht.ReadAll()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	for _, parts := range entries {
-		users[parts[0]] = parts[1]
+		for _, parts := range entries {
+			users[parts[0]] = parts[1]
+		}
 	}
 }
 
